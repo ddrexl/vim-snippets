@@ -1,0 +1,166 @@
+global !p
+def get_include_guard():
+    import os
+    try:
+        abspath = os.path.abspath(path)
+        delimiter = 'lib'
+        project_path = abspath.split(delimiter)[1]
+        tokens = project_path.replace(os.path.sep, "_").replace(".", "_").split("_")
+        tokens[0] = delimiter
+        guard = "_".join(tokens).upper()
+    except:
+        guard = "ERROR"
+    return guard
+
+def get_copyright():
+    import datetime
+    copyright = """
+// Copyright {year}. The company.
+// more lines
+""".format(year=datetime.date.today().year)
+    return copyright
+
+def get_own_header():
+    return "own_header"
+endglobal
+
+snippet hdr "cpp header" b
+`!p snip.rv = get_copyright()`
+#ifndef ${1:`!p snip.rv = get_include_guard()`}
+#define $1
+
+namespace ${2:adp}
+{
+
+${VISUAL}$0
+
+}
+
+#endif  // $1
+endsnippet
+
+snippet cpp "cpp source" b
+`!p snip.rv = get_copyright()`
+#include "${1:`!p snip.rv = get_own_header()`}"
+
+namespace ${2:adp}
+{
+
+${VISUAL}$0
+
+}
+endsnippet
+
+snippet once "include guard" b
+#ifndef ${1:`!p snip.rv = get_include_guard()`}
+#define $1
+
+${VISUAL}$0
+
+#endif  // $1
+endsnippet
+
+snippet cl "class" b
+class ${1:ClassName}
+{
+public:
+	$0
+};
+endsnippet
+
+snippet cl6 "class (rule of 6)" b
+class ${1:ClassName}
+{
+public:
+	$1() = default;
+	~$1() = default;
+	$1(const $1&) = default;
+	$1& operator=(const $1&) = default;
+	$1($1&&) = default;
+	$1& operator=($1&&) = default;
+
+	$0
+};
+endsnippet
+
+snippet in "interface" b
+class ${1:InterfaceName}
+{
+public:
+	virtual ~$1() = default;
+	$0
+};
+endsnippet
+
+snippet vfun "virtual function" b
+virtual ${2:void} ${1:MethodName}(${3}) ${4}
+{
+	$0
+}
+endsnippet
+
+snippet vfund "virtual function declaration" b
+virtual ${2:void} ${1:MethodName}(${3}) ${4} = 0;
+endsnippet
+
+snippet for "for loop (auto&)" b
+for(auto& ${1:i} : ${2:collection})
+{
+	$0
+}
+endsnippet
+
+snippet forc "for loop (const auto&)" b
+for(const auto& ${1:i} : ${2:collection})
+{
+	$0
+}
+endsnippet
+
+snippet ns "namespace" b
+namespace ${1}
+{
+${VISUAL}$0
+}
+endsnippet
+
+snippet assert "gmock ASSERT_THAT" b
+ASSERT_THAT(${1}, ${2:Eq()});
+endsnippet
+
+# TODO smart unit name
+snippet test "gtest TEST" b
+TEST(${1:Unit}, ${2:CanDoThis})
+{
+	$0
+}
+endsnippet
+
+# TODO smart unit name
+snippet testf "gtest TEST_F" b
+TEST_F(${1:Unit}, ${2:CanDoThis})
+{
+	$0
+}
+endsnippet
+
+snippet tests "gtest suite" b
+#include <gmock/gmock.h>
+
+namespace ${1:adp} {
+namespace {
+
+using testing::Test;
+
+class ${2:Unit} : public Test
+{
+public:
+};
+
+TEST_F($2, ${3:CanDoThis}) {
+	${4:FAIL();}
+}
+
+}
+}
+endsnippet
