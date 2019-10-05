@@ -1,6 +1,5 @@
 global !p
 def get_include_guard():
-    import os
     try:
         abspath = os.path.abspath(path)
         delimiter = 'lib'
@@ -20,8 +19,14 @@ def get_copyright():
 """.format(year=datetime.date.today().year)
     return copyright
 
+# TODO
 def get_own_header():
     return "own_header"
+
+def get_test_unit_name():
+    lines =  "\n".join(line for line in snip.buffer)
+    match = re.search(r'TEST_F\((.*),.*\)', lines)
+    return match.group(1) if match is not None else "Unit"
 endglobal
 
 snippet hdr "cpp header" b
@@ -128,17 +133,15 @@ snippet assert "gmock ASSERT_THAT" b
 ASSERT_THAT(${1}, ${2:Eq()});
 endsnippet
 
-# TODO smart unit name
 snippet test "gtest TEST" b
-TEST(${1:Unit}, ${2:CanDoThis})
+TEST(${1:`!p snip.rv = get_test_unit_name()`}, ${2:CanDoThis})
 {
 	$0
 }
 endsnippet
 
-# TODO smart unit name
 snippet testf "gtest TEST_F" b
-TEST_F(${1:Unit}, ${2:CanDoThis})
+TEST_F(${1:`!p snip.rv = get_test_unit_name()`}, ${2:CanDoThis})
 {
 	$0
 }
