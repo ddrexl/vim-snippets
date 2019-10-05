@@ -1,0 +1,29 @@
+snippet ccb "cc_binary" b
+cc_binary(
+	name = "${1:name}",
+	srcs = ["${2:source}"],
+	deps = [ "${3://dependency}"],
+)
+endsnippet
+
+# TODO name == eponymous
+snippet ccl "cc_library" b
+cc_library(
+	name="${1:lib}",
+	hdrs= ["${2:lib.h}"],
+	srcs= ["${3:lib.cpp}"],
+	visibility = ["//visibility:public"],
+)
+endsnippet
+
+# TODO dep == lib
+snippet cct "cc_test" b
+cc_test(
+	name = "${1:unit_test}",
+	srcs = ${2:glob(["test/*.cpp"])},
+	deps = [
+			"${3::lib}",
+			"@googletest//:gtest_main",
+	],
+)
+endsnippet
